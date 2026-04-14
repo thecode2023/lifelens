@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.env
+data/cdc_places_raw.csv
+data/census_acs_raw.csv
+data/usda_food_access_raw.csv
+data/FoodAccessResearchAtlasData*.xlsx
+.DS_Store
