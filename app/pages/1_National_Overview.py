@@ -38,7 +38,9 @@ fig = choropleth_map(counties.dropna(subset=[metric]), value_col=metric)
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 # Tier summary bar
-st.markdown("<div style="font-size: 0.8rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 16px; margin-bottom: 8px;">Counties by Health Equity Tier</div>", unsafe_allow_html=True)
+st.markdown("""<div style="font-size: 0.8rem; font-weight: 600; color: #6b7280; text-transform: uppercase;
+     letter-spacing: 0.06em; margin-top: 16px; margin-bottom: 8px;">Counties by Health Equity Tier</div>""",
+    unsafe_allow_html=True)
 tier_cols = st.columns(5)
 for col, (tier, color) in zip(tier_cols, TIER_COLORS.items()):
     count = int((valid['hei_tier'] == tier).sum())
