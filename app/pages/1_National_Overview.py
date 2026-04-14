@@ -13,6 +13,16 @@ st.markdown('<p class="page-subtitle">Health Equity Index scores across US count
 
 counties = get_all_counties()
 
+# Filter out ghost records from outer join (no real name/state/population)
+valid = counties[
+    (counties['county_name'].notna()) & 
+    (~counties['county_name'].str.startswith('County ')) &
+    (counties['state_abbr'].notna()) &
+    (counties['state_abbr'] != '') &
+    (counties['state_abbr'] != 'None') &
+    (counties['population'] > 0)
+].copy()
+
 # Metric selector
 metric = st.selectbox("Map metric", [
     'health_equity_index',
@@ -23,15 +33,15 @@ metric = st.selectbox("Map metric", [
 ], format_func=lambda x: x.replace('_', ' ').replace('subindex', 'sub-index').title(),
    label_visibility='collapsed')
 
-# Choropleth
-fig = choropleth_map(counties, value_col=metric)
+# Choropleth — use all counties with HEI scores for map coverage
+fig = choropleth_map(counties.dropna(subset=[metric]), value_col=metric)
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 # Tier summary bar
 st.markdown("<div style='height: 8px'></div>", unsafe_allow_html=True)
 tier_cols = st.columns(5)
 for col, (tier, color) in zip(tier_cols, TIER_COLORS.items()):
-    count = int((counties['hei_tier'] == tier).sum())
+    count = int((valid['hei_tier'] == tier).sum())
     with col:
         st.markdown(f"""
         <div style="text-align:center; background: linear-gradient(135deg, rgba(17,24,39,0.8), rgba(15,23,42,0.6));
@@ -54,7 +64,7 @@ with c1:
     <div style="font-size: 0.85rem; font-weight: 600; color: #10b981; margin-bottom: 8px;
          text-transform: uppercase; letter-spacing: 0.05em;">▲ Highest Equity</div>
     """, unsafe_allow_html=True)
-    top = counties.nlargest(10, 'health_equity_index')[
+    top = valid.nlargest(10, 'health_equity_index')[
         ['county_name', 'state_abbr', 'health_equity_index', 'population']].copy()
     top.columns = ['County', 'State', 'HEI', 'Population']
     top['Population'] = top['Population'].apply(lambda x: f"{x:,.0f}")
@@ -66,7 +76,7 @@ with c2:
     <div style="font-size: 0.85rem; font-weight: 600; color: #ef4444; margin-bottom: 8px;
          text-transform: uppercase; letter-spacing: 0.05em;">▼ Lowest Equity</div>
     """, unsafe_allow_html=True)
-    bottom = counties.nsmallest(10, 'health_equity_index')[
+    bottom = valid.nsmallest(10, 'health_equity_index')[
         ['county_name', 'state_abbr', 'health_equity_index', 'population']].copy()
     bottom.columns = ['County', 'State', 'HEI', 'Population']
     bottom['Population'] = bottom['Population'].apply(lambda x: f"{x:,.0f}")
