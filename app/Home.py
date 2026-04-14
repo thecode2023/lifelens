@@ -90,7 +90,8 @@ for col, (icon, title, desc) in zip([n1, n2, n3, n4], nav_items):
 st.markdown("<div style='height: 16px'></div>", unsafe_allow_html=True)
 st.markdown("""
 <div class="ll-card">
-    <h4>Health Equity Tier Distribution</h4>
+    <h4>Counties by Health Equity Tier</h4>
+    <p style="font-size: 0.75rem; color: #6b7280; margin-top: -4px;">Number of US counties in each scoring band (0–100 scale)</p>
 </div>
 """, unsafe_allow_html=True)
 
